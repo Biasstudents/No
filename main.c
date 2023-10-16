@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <curl/curl.h>
 
-#define NUM_THREADS 10000
+#define NUM_THREADS 5000
 
 void *send_request(void *threadid) {
   CURL *curl;
