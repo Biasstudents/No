@@ -29,7 +29,7 @@ void *send_request(void *threadid) {
 
     http::request<http::empty_body> req{http::verb::head, target, version};
     req.set(http::field::host, host);
-    // req.set(http::field::user_agent, "My Program v1.0");
+    req.set(http::field::user_agent, "My Program v1.0");  // User-Agent header added here
 
     while(true) {
         http::write(socket, req);
