@@ -5,23 +5,32 @@
 
 // Function that sends data to the server
 void sendData(const std::string& server_ip, unsigned short server_port) {
-    boost::asio::io_service io_service;
+    try {
+        boost::asio::io_service io_service;
+        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(server_ip), server_port);
+        boost::asio::ip::tcp::socket socket(io_service);
 
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(server_ip), server_port);
-
-    boost::asio::ip::tcp::socket socket(io_service);
-    socket.connect(endpoint);
-
-    std::vector<char> data(1024 * 1024, 0);  // 1MB of data
-
-    while (true) {
-        boost::system::error_code error;
-        socket.write_some(boost::asio::buffer(data), error);
-
-        if (error) {
-            std::cerr << "Error while sending data: " << error.message() << std::endl;
-            break;
+        // Attempt to connect to the server and handle any errors
+        boost::system::error_code ec;
+        socket.connect(endpoint, ec);
+        if (ec) {
+            std::cerr << "Failed to connect to " << server_ip << ":" << server_port << ". Error: " << ec.message() << std::endl;
+            return;
         }
+
+        std::vector<char> data(1024 * 1024, 0);  // 1MB of data
+
+        while (true) {
+            boost::system::error_code error;
+            socket.write_some(boost::asio::buffer(data), error);
+
+            if (error) {
+                std::cerr << "Error while sending data: " << error.message() << std::endl;
+                break;
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in thread: " << e.what() << std::endl;
     }
 }
 
